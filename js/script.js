@@ -1,33 +1,36 @@
+const NOTA_APROBACION = 6;
+let notas = JSON.parse(localStorage.getItem("notas")) || [];
 
-let notas = [];            
-const NOTA_APROBACION = 6;  
-function pedirNotas() {
-    alert("Bienvenido al simulador de promedio.");
+const inputNota = document.getElementById("inputNota");
+const btnAgregar = document.getElementById("btnAgregar");
+const btnCalcular = document.getElementById("btnCalcular");
+const listaNotas = document.getElementById("listaNotas");
+const resultado = document.getElementById("resultado");
 
-    let cantidad = prompt("¿Cuántas notas querés ingresar?");
-    cantidad = parseInt(cantidad);
+// Mostrar notas guardadas al cargar
+mostrarNotas();
 
-    if (isNaN(cantidad) || cantidad <= 0) {
-        alert("Cantidad inválida.");
+// Evento para agregar nota
+btnAgregar.addEventListener("click", function () {
+    let valor = parseFloat(inputNota.value);
+
+    if (isNaN(valor) || valor < 0 || valor > 10) {
+        resultado.textContent = "Ingresá una nota válida (0 a 10)";
         return;
     }
 
-    for (let i = 0; i < cantidad; i++) {
-        let nota = parseFloat(prompt("Ingresá la nota " + (i + 1)));
-        if (isNaN(nota)) {
-            alert("Dato inválido. Se registrará como 0.");
-            nota = 0;
-        }
-        notas.push(nota);
-    }
+    notas.push(valor);
+    localStorage.setItem("notas", JSON.stringify(notas));
+    inputNota.value = "";
 
-    console.log("Notas ingresadas:", notas);
-}                              
+    mostrarNotas();
+});
 
-function calcularPromedio() {
+// Evento para calcular promedio
+btnCalcular.addEventListener("click", function () {
     if (notas.length === 0) {
-        console.warn("No hay notas cargadas.");
-        return null;
+        resultado.textContent = "No hay notas cargadas";
+        return;
     }
 
     let suma = 0;
@@ -36,25 +39,21 @@ function calcularPromedio() {
     }
 
     let promedio = suma / notas.length;
-    return promedio;
-}
-
-
-function mostrarResultado(promedio) {
-    if (promedio === null) return;
-
-    let mensaje = "El promedio es: " + promedio.toFixed(2);
 
     if (promedio >= NOTA_APROBACION) {
-        mensaje += "/nEstado: APROBADO ✔";
+        resultado.textContent = "Promedio: " + promedio.toFixed(2) + " - APROBADO";
     } else {
-        mensaje += "/nEstado: DESAPROBADO ✘";
+        resultado.textContent = "Promedio: " + promedio.toFixed(2) + " - DESAPROBADO";
     }
+});
 
-    alert(mensaje);
-    console.log(mensaje);
+// Mostrar las notas en la lista
+function mostrarNotas() {
+    listaNotas.innerHTML = "";
+
+    for (let i = 0; i < notas.length; i++) {
+        let li = document.createElement("li");
+        li.textContent = notas[i];
+        listaNotas.appendChild(li);
+    }
 }
-
-pedirNotas();
-let prom = calcularPromedio();
-mostrarResultado(prom);

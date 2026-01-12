@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Simulador de Promedio de Nota</title>
-  <link rel="stylesheet" href=css/styles.css>
+    <meta charset="UTF-8">
+    <title>Simulador de Promedio</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <h1>Simulador de Promedio de Nota</h1>
-  <p>
-    Este simulador permite ingresar un conjunto de notas y obtener el promedio,
-    indicando si el promedio de notas de alumnos aprueba o desaprueba.
-  </p>
-<script src="./js/script.js"></script>  
+
+    <h1>Simulador de Promedio de Notas</h1>
+
+    <div class="contenedor">
+        <input type="number" id="inputNota" placeholder="Ingresá una nota">
+        <button id="btnAgregar">Agregar nota</button>
+
+        <h3>Notas ingresadas:</h3>
+        <ul id="listaNotas"></ul>
+
+        <button id="btnCalcular">Calcular promedio</button>
+
+        <p id="resultado"></p>
+    </div>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
