@@ -17,19 +17,12 @@ h1 {
     border-radius: 8px;
 }
 
-input {
-    width: 90%;
-    padding: 8px;
-    margin-bottom: 10px;
-}
-
-button {
+input, button {
     padding: 8px;
     margin: 5px;
-    cursor: pointer;
 }
 
 #resultado {
     font-weight: bold;
-    margin-top: 15px;
+    margin-top: 10px;
 }

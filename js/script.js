@@ -1,59 +1,105 @@
 const NOTA_APROBACION = 6;
 let notas = JSON.parse(localStorage.getItem("notas")) || [];
 
+const app = document.getElementById("app");
+
+// HTML generado desde JS
+app.innerHTML = `
+    <div class="contenedor">
+        <input type="number" id="inputNota" placeholder="Ingresá una nota">
+        <button id="btnAgregar">Agregar nota</button>
+
+        <h3>Notas ingresadas</h3>
+        <ul id="listaNotas"></ul>
+
+        <button id="btnCalcular">Calcular promedio</button>
+        <button id="btnReset">Reiniciar simulador</button>
+        <p id="resultado"></p>
+    </div>
+`;
+
 const inputNota = document.getElementById("inputNota");
 const btnAgregar = document.getElementById("btnAgregar");
 const btnCalcular = document.getElementById("btnCalcular");
 const listaNotas = document.getElementById("listaNotas");
 const resultado = document.getElementById("resultado");
+const btnReset = document.getElementById("btnReset");
 
-// Mostrar notas guardadas al cargar
-mostrarNotas();
+// Cargar notas
+fetch("data/notas.json")
+    .then(res => res.json())
+    .then(data => {
+        if (notas.length === 0) {
+            notas = data.map(n => n.valor);
+            localStorage.setItem("notas", JSON.stringify(notas));
+            renderNotas();
+        }
+    });
 
-// Evento para agregar nota
-btnAgregar.addEventListener("click", function () {
-    let valor = parseFloat(inputNota.value);
+renderNotas();
+
+// Eventos
+btnAgregar.addEventListener("click", () => {
+    const valor = parseFloat(inputNota.value);
 
     if (isNaN(valor) || valor < 0 || valor > 10) {
-        resultado.textContent = "Ingresá una nota válida (0 a 10)";
+        Swal.fire("Error", "Ingresá una nota válida (0 a 10)", "error");
         return;
     }
 
     notas.push(valor);
     localStorage.setItem("notas", JSON.stringify(notas));
     inputNota.value = "";
-
-    mostrarNotas();
+    renderNotas();
 });
 
-// Evento para calcular promedio
-btnCalcular.addEventListener("click", function () {
+btnCalcular.addEventListener("click", () => {
     if (notas.length === 0) {
-        resultado.textContent = "No hay notas cargadas";
+        Swal.fire("Sin notas", "No hay notas cargadas", "warning");
         return;
     }
 
-    let suma = 0;
-    for (let i = 0; i < notas.length; i++) {
-        suma += notas[i];
-    }
-
-    let promedio = suma / notas.length;
-
-    if (promedio >= NOTA_APROBACION) {
-        resultado.textContent = "Promedio: " + promedio.toFixed(2) + " - APROBADO";
-    } else {
-        resultado.textContent = "Promedio: " + promedio.toFixed(2) + " - DESAPROBADO";
-    }
+    const promedio = calcularPromedio(notas);
+    mostrarResultado(promedio);
 });
 
-// Mostrar las notas en la lista
-function mostrarNotas() {
-    listaNotas.innerHTML = "";
+btnReset.addEventListener("click", () => {
+    Swal.fire({
+        title: "¿Reiniciar simulador?",
+        text: "Se borrarán todas las notas cargadas",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, reiniciar",
+        cancelButtonText: "Cancelar"
+    }).then(result => {
+        if (result.isConfirmed) {
+            notas = [];
+            localStorage.removeItem("notas");
+            renderNotas();
+            resultado.textContent = "";
+        }
+    });
+});
 
-    for (let i = 0; i < notas.length; i++) {
-        let li = document.createElement("li");
-        li.textContent = notas[i];
+// Funciones
+function renderNotas() {
+    listaNotas.innerHTML = "";
+    notas.forEach(nota => {
+        const li = document.createElement("li");
+        li.textContent = nota;
         listaNotas.appendChild(li);
+    });
+}
+
+function calcularPromedio(notas) {
+    const suma = notas.reduce((acc, n) => acc + n, 0);
+    return suma / notas.length;
+}
+
+function mostrarResultado(promedio) {
+    if (promedio >= NOTA_APROBACION) {
+        resultado.textContent = `Promedio: ${promedio.toFixed(2)} - APROBADO`;
+    } else {
+        resultado.textContent = `Promedio: ${promedio.toFixed(2)} - DESAPROBADO`;
     }
 }
